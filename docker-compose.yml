@@ -1,0 +1,50 @@
+version: "3"
+
+# Modified version of visibilityspots docker compose file for pihole + 1.1.1.1 DNS over HTTPS on a raspberrypi
+services:
+  cloudflared:
+    container_name: cloudflared
+    # Replace ARM with correct version for you device (use arm for raspberrypi)
+    image: visibilityspots/cloudflared:arm
+    restart: unless-stopped
+    networks:
+      pihole:
+        ipv4_address: 10.0.0.2
+
+  pi-hole:
+    container_name: pi-hole
+    image: pihole/pihole
+    restart: unless-stopped
+    # Web panel will be at http://<your pi's ip>:8000 Set your devices or routers DNS to your pi's ip
+    ports:
+      - "8000:80/tcp"
+      - "53:53/tcp"
+      - "53:53/udp"
+    environment:
+      - ServerIP=10.0.0.3
+      - DNS1='10.0.0.2#5054'
+      - DNS2=''
+      - IPv6=false
+      - TZ=CEST-2
+      - DNSMASQ_LISTENING=all
+    # Replace PASSWORD with a password for the pihole admin panel
+      - WEBPASSWORD=PASSWORD
+    networks:
+      pihole:
+        ipv4_address: 10.0.0.3
+    volumes:
+      - '/home/pi/pihole/etc-pihole/:/etc/pihole/'
+      - '/home/pi/pihole/etc-dnsmasq.d/:/etc/dnsmasq.d/'
+    # This is for the pihole container dns you dont need to change it
+    dns:
+      - 127.0.0.1
+      - 1.1.1.1
+    cap_add:
+      - NET_ADMIN
+
+networks:
+  pihole:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.0.0.0/29
