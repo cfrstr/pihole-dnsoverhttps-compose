@@ -32,7 +32,7 @@ services:
     networks:
       pihole:
         ipv4_address: 10.0.0.3
-    # Config files are bound to /home/pi/pihone on your raspberrypi, if your using a diffrent device change it to somewhere else
+    # Config files are bound to /home/pi/pihone on your raspberrypi, if your using a different device other than a raspberry pi change it to somewhere else
     volumes:
       - '/home/pi/pihole/etc-pihole/:/etc/pihole/'
       - '/home/pi/pihole/etc-dnsmasq.d/:/etc/dnsmasq.d/'
